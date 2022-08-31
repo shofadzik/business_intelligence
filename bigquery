@@ -1,0 +1,50 @@
+create table `data-engineering-2-329815.data_engineering_6.datamart_monthly_supplier_gross_revenue_shofa` as
+select d.company_name, 
+extract(MONTH FROM order_date) as month ,
+extract(YEAR FROM order_date) as year, 
+sum((1-discount)*b.unit_price*b.quantity) as gross_revenue 
+from `data-engineering-2-329815.data_engineering_6.orders` a
+join `data-engineering-2-329815.data_engineering_6.order_details` b
+on a.order_id = b.order_id
+join `data-engineering-2-329815.data_engineering_6.products`c
+on b.product_id = c.product_id
+join `data-engineering-2-329815.data_engineering_6.suppliers`d
+on c.supplier_id = d.supplier_id
+group by d.company_name, month, year
+
+
+create table `data-engineering-2-329815.data_engineering_6.datamart_monthly_category_sold_shofa` as
+SELECT d.category_name,
+extract(MONTH FROM order_date) as month,
+extract(YEAR FROM order_date) as year, 
+sum(b.quantity) as quantity 
+FROM `data-engineering-2-329815.data_engineering_6.orders` as a
+join `data-engineering-2-329815.data_engineering_6.order_details` as b
+on a.order_id = b.order_id
+join `data-engineering-2-329815.data_engineering_6.products` as c
+on b.product_id = c.product_id
+join `data-engineering-2-329815.data_engineering_6.categories` as d
+on c.category_id = d.category_id
+group by d.category_name,month,year
+
+
+create table `data-engineering-2-329815.data_engineering_6.datamart_monthly_country_gross_revenue_shofa` as
+SELECT a.ship_country,
+extract(MONTH FROM order_date) as month,
+extract(YEAR FROM order_date) as year, 
+sum((1-discount) * b.unit_price * b.quantity) as gross_revenue 
+FROM `data-engineering-2-329815.data_engineering_6.orders` as a
+join `data-engineering-2-329815.data_engineering_6.order_details` as b
+on a.order_id = b.order_id
+group by a.ship_country,month,year
+
+
+create table `data-engineering-2-329815.data_engineering_6.datamart_daily_gross_revenue_shofa` as
+SELECT a.order_date,
+extract(MONTH FROM order_date) as month,
+extract(YEAR FROM order_date) as year, 
+sum((1-discount) * b.unit_price * b.quantity) as gross_revenue 
+FROM `data-engineering-2-329815.data_engineering_6.orders` as a
+join `data-engineering-2-329815.data_engineering_6.order_details` as b
+on a.order_id = b.order_id
+group by a.order_date,month,year
